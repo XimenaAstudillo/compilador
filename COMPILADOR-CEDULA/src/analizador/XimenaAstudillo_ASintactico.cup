@@ -1,0 +1,116 @@
+/*­­­­Sección de declaraciones package e imports­­­­­­­­­*/
+package analizador;
+import java_cup.runtime.*;
+/*­­­­ Sección componentes de código de usuario ­­­­*/
+parser code {:
+    public void report_error(String message, Object info) {
+       	StringBuffer m = new StringBuffer("Error");
+		System.out.println("Mensaje: "+message);
+		System.out.println("info: "+info.toString());
+java_cup.runtime.Symbol s=((java_cup.runtime.Symbol)info);
+		if(info instanceof java_cup.runtime.Symbol) {
+
+                    if(info.toString().equals("#0")){
+                            //System.out.println("La sentencia esta incompleta");
+                            m.append(": La sentencia esta incompleta");
+                        }
+                    if(info.toString().equals("#6")){
+                        if(s.right<=4){
+                            m.append(": El # no pertenece a las provincias de Loja,Oro,Pichincha '11,07,17'");
+                        }
+                        else{
+                            if(s.right==11){
+                            //System.out.println("Error caracter incorrecto '-'  ");
+                            m.append(": Debe utilizar caracter '-'  ");
+                        }else{
+                               m.append(": Solo se permiten numeros");
+}
+}
+                }
+
+ 		
+			/* Comprueba si el numero de línea es mayor o igual que cero */
+			if(s.left >= 0) {
+				m.append(" en linea "+(s.left+1));
+				/*Comprueba si el numero de columna es mayor o igual que cero */
+				if (s.right >= 0)
+					m.append(", y columna "+(s.right+1));
+			}
+		}
+		m.append(" : "+message);
+		System.err.println(m);
+    }
+    public void report_fatal_error(String message, Object info) {
+       	report_error(message, info);
+		System.exit(1);
+    }
+
+/* ­­­­­­­­­­­­­­ Métodos  ­­­­­­­­­­­ */
+
+public Boolean validarDigitos(String numero){
+
+    if(numero.length()!=7){
+            System.out.println("Error el numero de digitos permitidos es 7 despues el codigo de provincia y antes del caracter");
+                return false;
+}
+        else
+   return true;
+
+}
+
+public Boolean validarDigitos2(String numero1){
+
+    if(numero1.length()!=1){
+            System.out.println("Error el numero de digitos permitidos despues del caracter es 1");
+            return false;
+
+}
+        else
+
+    return true;
+
+}
+
+public String validarCodigoProvincia(String CProvincia,String numero,String numero1){
+
+    if(validarDigitos(numero)&&validarDigitos2(numero1)){
+
+        if(CProvincia == "CODIGO LOJA"){
+            System.out.println("CORRECTO");
+            System.out.println("El numero de cedula pertenece a la provincia de Loja");}
+            else if(CProvincia == "CODIGO PICHINCHA"){
+               System.out.println("CORRECTO");
+               System.out.println("El numero de cedula pertenece a la provincia de Pichincha");}
+                else if(CProvincia == "CODIGO ORO"){
+                     System.out.println("CORRECTO");
+                     System.out.println("El numero de cedula pertenece a la provincia de el Oro");}
+}
+        
+   return "Cedula incorrecta";
+            
+}
+
+
+:};
+/*­­­ Declaración de la lista de símbolos de la gramática ­­­­­*/
+
+/* Produciones de flujo normal */
+terminal CARACTER, DIGITOSLOJA, DIGITOSPICHINCHA, DIGITOSORO, NUMEROS;
+non terminal programa, LINEAS, DIGITOS;
+
+/* ­­­­­­­­­­­­­­ Declaración de la gramática  ­­­­­­­­­­­ */
+programa::=LINEAS;
+
+LINEAS::=DIGITOS:d NUMEROS:n1 CARACTER NUMEROS:n2 {: RESULT = parser.validarCodigoProvincia(d.toString(),n1.toString(),n2.toString());:};
+
+DIGITOS::= DIGITOSLOJA {:RESULT="CODIGO LOJA";:}|
+DIGITOSPICHINCHA {:RESULT="CODIGO PICHINCHA";:}|
+DIGITOSORO {:RESULT="CODIGO ORO";:};
+
+
+
+
+
+
+
+
